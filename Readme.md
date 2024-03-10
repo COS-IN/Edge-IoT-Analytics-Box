@@ -1,6 +1,5 @@
 <h1 align="center"  style="border-bottom: none">
-    <!-- Energy Insights In a Box<br> -->
-    <a href="//localhost" target="_blank"><img width="50%" alt="Energy Insights in a Box" src="./artifacts/einsights_logo.jpg"></a>
+    <a href="//localhost" target="_blank"><img width="50%" alt="Edge-IoT-Analytics-Box" src="./artifacts/einsights_logo.jpg"></a>
 </h1>
 
 <h1  align="center" >Extensible Data Analytics System</h1>
@@ -22,7 +21,7 @@
 
 ## Overview 
 
-Energy Insights In a Box is a data analytics system that can be used to capture and analyze data in real time. 
+Edge-IoT-Analytics-Box is a data analytics system that can be used to capture and analyze data in real time. 
 The system is designed to be deployed on edge devices like Jetson Orin with following design goals.
 
   * extensibility 

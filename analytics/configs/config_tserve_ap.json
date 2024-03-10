@@ -1,0 +1,28 @@
+{
+    "_comment": [
+      "All times are in seconds",
+      "DataAnalyzer options: tserve, dump",
+      "  tserve: use the tserve data analyzer",
+      "  dump: fetches an dumps the first window",
+      "Processor options: realtime, historic",
+      "  realtime: process data in real time",
+      "  historic: process data from start to stop time",
+      "t_start, t_end only apply if processor is historic"
+    ],
+    "version": 10, 
+    "output_field_name": "dummy",
+    "dataanalyzer": "dump",
+    "window_size": 121,
+    "time_step": 1,
+    "input_measurements": [
+        "Power_Meters/HVAC/RoofTopUnit1_v2/ApparentPowerVA/Value",
+        "Power_Meters/HVAC/RoofTopUnit1_v2/ApparentPowerVA/Value"
+    ],
+    "models": [
+      "arima",
+      "arnn_aparentpower"
+    ],
+    "influxdb_bucket": "amatrol",
+    "processor": "realtime"
+}
+

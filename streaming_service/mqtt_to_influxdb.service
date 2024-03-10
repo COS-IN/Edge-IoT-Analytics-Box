@@ -1,0 +1,13 @@
+[Unit]
+Description=Listens to MQTT Messages and Logs to InfluxDB
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/data/ar/influx_ingestion/scripts/mqtt_to_influxdb.sh
+
+[Install]
+WantedBy=multi-user.target
+

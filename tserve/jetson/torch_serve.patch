@@ -1,0 +1,283 @@
+commit 141465a8ea3c4df2354d6de9d6a6a8e9ed27d72b
+Author: Abdul Rehman <abdulrehmanee010@gmail.com>
+Date:   Thu Jan 11 22:41:43 2024 -0500
+
+    Builing image for Jetson Orin
+
+diff --git a/docker/Dockerfile b/docker/Dockerfile
+index bcca48c0..95177755 100644
+--- a/docker/Dockerfile
++++ b/docker/Dockerfile
+@@ -27,37 +27,19 @@ ARG BASE_IMAGE=ubuntu:rolling
+ # on each build-stage.
+ ARG PYTHON_VERSION=3.9
+ 
+-FROM ${BASE_IMAGE} AS compile-image
++FROM ${BASE_IMAGE} AS production-image
+ ARG BASE_IMAGE=ubuntu:rolling
+ ARG PYTHON_VERSION
+ ARG BUILD_NIGHTLY
+-ENV PYTHONUNBUFFERED TRUE
+ 
+ RUN --mount=type=cache,id=apt-dev,target=/var/cache/apt \
+     apt-get update && \
+-    apt-get upgrade -y && \
+     apt-get install software-properties-common -y && \
+     add-apt-repository -y ppa:deadsnakes/ppa && \
+-    apt remove python-pip  python3-pip && \
+     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+-        ca-certificates \
+-        g++ \
+-        python3-distutils \
+-        python$PYTHON_VERSION \
+-        python$PYTHON_VERSION-dev \
+-        python$PYTHON_VERSION-venv \
+-        openjdk-17-jdk \
+-        curl \
+-        git \
+-    && rm -rf /var/lib/apt/lists/*
+-
+-# Make the virtual environment and "activating" it by adding it first to the path.
+-# From here on the python$PYTHON_VERSION interpreter is used and the packages
+-# are installed in /home/venv which is what we need for the "runtime-image"
+-RUN python$PYTHON_VERSION -m venv /home/venv
+-ENV PATH="/home/venv/bin:$PATH"
+-
+-RUN python -m pip install -U pip setuptools
++        openjdk-17-jdk 
++
++RUN python3 -m pip install -U pip setuptools
+ 
+ # This is only useful for cuda env
+ RUN export USE_CUDA=1
+@@ -68,174 +50,29 @@ RUN git clone --depth 1 --recursive https://github.com/pytorch/serve.git
+ 
+ WORKDIR "serve"
+ 
+-RUN \
+-    if echo "$BASE_IMAGE" | grep -q "cuda:"; then \
+-        # Install CUDA version specific binary when CUDA version is specified as a build arg
+-        if [ "USE_CUDA_VERSION" ]; then \
+-            python ./ts_scripts/install_dependencies.py --cuda $USE_CUDA_VERSION; \
+-        # Install the binary with the latest CPU image on a CUDA base image
+-        else \
+-            python ./ts_scripts/install_dependencies.py; \
+-        fi; \
+-    # Install the CPU binary
+-    else \
+-        python ./ts_scripts/install_dependencies.py; \
+-    fi
+-
+ # Make sure latest version of torchserve is uploaded before running this
+ RUN \
+     if echo "$BUILD_NIGHTLY" | grep -q "false"; then \
+-        python -m pip install --no-cache-dir torchserve torch-model-archiver torch-workflow-archiver;\
++        python3 -m pip install --no-cache-dir torchserve torch-model-archiver torch-workflow-archiver;\
+     else \
+-        python -m pip install --no-cache-dir torchserve-nightly torch-model-archiver-nightly torch-workflow-archiver-nightly;\
++        python3 -m pip install --no-cache-dir torchserve-nightly torch-model-archiver-nightly torch-workflow-archiver-nightly;\
+     fi
+ 
+-# Final image for production
+-FROM ${BASE_IMAGE} AS production-image
+-# Re-state ARG PYTHON_VERSION to make it active in this build-stage (uses default define at the top)
+-ARG PYTHON_VERSION
+-ENV PYTHONUNBUFFERED TRUE
+-
+-RUN --mount=type=cache,target=/var/cache/apt \
+-    apt-get update && \
+-    apt-get upgrade -y && \
+-    apt-get install software-properties-common -y && \
+-    add-apt-repository -y ppa:deadsnakes/ppa && \
+-    apt remove python-pip  python3-pip && \
+-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+-    python$PYTHON_VERSION \
+-    python3-distutils \
+-    python$PYTHON_VERSION-dev \
+-    python$PYTHON_VERSION-venv \
+-    # using openjdk-17-jdk due to circular dependency(ca-certificates) bug in openjdk-17-jre-headless debian package
+-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1009905
+-    openjdk-17-jdk \
+-    build-essential \
+-    && rm -rf /var/lib/apt/lists/* \
+-    && cd /tmp
+-
+-RUN useradd -m model-server \
+-    && mkdir -p /home/model-server/tmp
+-
+-COPY --chown=model-server --from=compile-image /home/venv /home/venv
+-
+-ENV PATH="/home/venv/bin:$PATH"
++RUN  mkdir -p /home/model-server/tmp
+ 
+ COPY dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh
+ 
+ RUN chmod +x /usr/local/bin/dockerd-entrypoint.sh \
+-    && chown -R model-server /home/model-server
++    && chown -R root /home/model-server
+ 
+ COPY config.properties /home/model-server/config.properties
+-RUN mkdir /home/model-server/model-store && chown -R model-server /home/model-server/model-store
++RUN mkdir /home/model-server/model-store && chown -R root /home/model-server/model-store
+ 
+ EXPOSE 8080 8081 8082 7070 7071
+ 
+-USER model-server
++USER root 
+ WORKDIR /home/model-server
+ ENV TEMP=/home/model-server/tmp
+ ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
+ CMD ["serve"]
+ 
+-# Final image for docker regression
+-FROM ${BASE_IMAGE} AS ci-image
+-# Re-state ARG PYTHON_VERSION to make it active in this build-stage (uses default define at the top)
+-ARG PYTHON_VERSION
+-ARG BRANCH_NAME
+-ENV PYTHONUNBUFFERED TRUE
+-
+-RUN --mount=type=cache,target=/var/cache/apt \
+-    apt-get update && \
+-    apt-get upgrade -y && \
+-    apt-get install software-properties-common -y && \
+-    add-apt-repository -y ppa:deadsnakes/ppa && \
+-    apt remove python-pip  python3-pip && \
+-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+-    python$PYTHON_VERSION \
+-    python3-distutils \
+-    python$PYTHON_VERSION-dev \
+-    python$PYTHON_VERSION-venv \
+-    # using openjdk-17-jdk due to circular dependency(ca-certificates) bug in openjdk-17-jre-headless debian package
+-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1009905
+-    openjdk-17-jdk \
+-    build-essential \
+-    wget \
+-    numactl \
+-    nodejs \
+-    npm \
+-    zip \
+-    unzip \
+-    && npm install -g newman@5.3.2 newman-reporter-htmlextra markdown-link-check \
+-    && rm -rf /var/lib/apt/lists/* \
+-    && cd /tmp
+-
+-
+-COPY --from=compile-image /home/venv /home/venv
+-
+-ENV PATH="/home/venv/bin:$PATH"
+-
+-RUN python -m pip install --no-cache-dir -r https://raw.githubusercontent.com/pytorch/serve/$BRANCH_NAME/requirements/developer.txt
+-
+-RUN mkdir /home/serve
+-ENV TS_RUN_IN_DOCKER True
+-
+-WORKDIR /home/serve
+-CMD ["python", "test/regression_tests.py"]
+-
+-#Final image for developer Docker image
+-FROM ${BASE_IMAGE} as dev-image
+-# Re-state ARG PYTHON_VERSION to make it active in this build-stage (uses default define at the top)
+-ARG PYTHON_VERSION
+-ARG BRANCH_NAME
+-ARG BUILD_WITH_IPEX
+-ARG IPEX_VERSION=1.11.0
+-ARG IPEX_URL=https://software.intel.com/ipex-whl-stable
+-ENV PYTHONUNBUFFERED TRUE
+-RUN --mount=type=cache,target=/var/cache/apt \
+-    apt-get update && \
+-    apt-get upgrade -y && \
+-    apt-get install software-properties-common -y && \
+-    add-apt-repository -y ppa:deadsnakes/ppa && \
+-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+-    fakeroot \
+-    ca-certificates \
+-    dpkg-dev \
+-    sudo \
+-    g++ \
+-    git \
+-    python$PYTHON_VERSION \
+-    python$PYTHON_VERSION-dev \
+-    python3-distutils \
+-    python$PYTHON_VERSION-venv \
+-    # using openjdk-17-jdk due to circular dependency(ca-certificates) bug in openjdk-17-jre-headless debian package
+-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1009905
+-    openjdk-17-jdk \
+-    build-essential \
+-    curl \
+-    vim \
+-    numactl \
+-    && if [ "$BUILD_WITH_IPEX" = "true" ]; then apt-get update && apt-get install -y libjemalloc-dev libgoogle-perftools-dev libomp-dev && ln -s /usr/lib/x86_64-linux-gnu/libjemalloc.so /usr/lib/libjemalloc.so && ln -s /usr/lib/x86_64-linux-gnu/libtcmalloc.so /usr/lib/libtcmalloc.so && ln -s /usr/lib/x86_64-linux-gnu/libiomp5.so /usr/lib/libiomp5.so; fi \
+-    && rm -rf /var/lib/apt/lists/*
+-RUN git clone --recursive https://github.com/pytorch/serve.git \
+-    && cd serve \
+-    && git checkout ${BRANCH_NAME}
+-COPY --from=compile-image /home/venv /home/venv
+-ENV PATH="/home/venv/bin:$PATH"
+-WORKDIR "serve"
+-RUN python -m pip install -U pip setuptools \
+-    && python -m pip install --no-cache-dir -r requirements/developer.txt \
+-    && python ts_scripts/install_from_src.py \
+-    && useradd -m model-server \
+-    && mkdir -p /home/model-server/tmp \
+-    && cp docker/dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh \
+-    && chmod +x /usr/local/bin/dockerd-entrypoint.sh \
+-    && chown -R model-server /home/model-server \
+-    && cp docker/config.properties /home/model-server/config.properties \
+-    && mkdir /home/model-server/model-store && chown -R model-server /home/model-server/model-store \
+-    && chown -R model-server /home/venv
+-EXPOSE 8080 8081 8082 7070 7071
+-USER model-server
+-WORKDIR /home/model-server
+-ENV TEMP=/home/model-server/tmp
+-ENTRYPOINT ["/usr/local/bin/dockerd-entrypoint.sh"]
+-CMD ["serve"]
+\ No newline at end of file
+diff --git a/docker/Dockerfile.tserve b/docker/Dockerfile.tserve
+new file mode 100644
+index 00000000..57f3517a
+--- /dev/null
++++ b/docker/Dockerfile.tserve
+@@ -0,0 +1,6 @@
++# FROM pytorch/torchserve:latest-cpu as base
++FROM customtorch as base
++COPY reqs.txt .
++RUN python3 -m pip install -r reqs.txt
++
++
+diff --git a/docker/build_img.sh b/docker/build_img.sh
+new file mode 100755
+index 00000000..ccbf9c2d
+--- /dev/null
++++ b/docker/build_img.sh
+@@ -0,0 +1,5 @@
++#!/bin/bash
++
++docker build -f ./Dockerfile.tserve -t aarehman/torchserve:latest-cpu . 
++
++
+diff --git a/docker/build_jetson.sh b/docker/build_jetson.sh
+new file mode 100755
+index 00000000..571b9693
+--- /dev/null
++++ b/docker/build_jetson.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++
++
++./build_image.sh \
++    -bi nvcr.io/nvidia/l4t-ml:r35.2.1-py3 \
++    -bt production \
++    -t customtorch 
++
+diff --git a/docker/reqs.txt b/docker/reqs.txt
+new file mode 100644
+index 00000000..9443faa6
+--- /dev/null
++++ b/docker/reqs.txt
+@@ -0,0 +1,6 @@
++pandas
++statsmodels
++numpy
++fire
++influxdb_client
++

@@ -1,0 +1,13 @@
+[Unit]
+Description=Listens to MQTT Messages and Logs to File 
+After=mqtt_to_influxdb.service
+Requires=mqtt_to_influxdb.service
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/data/ar/influx_ingestion/scripts/mqtt_to_logfile.sh
+
+[Install]
+WantedBy=multi-user.target
+

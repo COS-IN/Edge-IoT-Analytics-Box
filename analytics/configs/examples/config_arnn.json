@@ -1,0 +1,31 @@
+{
+    "_comment": [
+      "All times are in seconds",
+      "DataAnalyzer options: arima, avg",
+      "Processor options: realtime, historic",
+      "t_start, t_end only apply if processor is historic"
+    ],
+
+    "window_size": 3600,
+    "time_step": 60,
+
+    "_comment_input_measurements": [
+        "Power_Meters/HVAC/RoofTopUnit1_v2/ApparentPowerVA/Value"
+    ],
+    "_comment0_input_measurements": [
+        "Power_Meters/HVAC/RoofTopUnit1_v2/TruePowerWatts/Value"
+    ],
+    "input_measurements": [
+        "Power_Meters/HVAC/RoofTopUnit1_v2/PowerFactor/Value"
+    ],
+
+    "output_field_name": "testing",
+    "dataanalyzer": "arnnpredict",
+
+    "influxdb_bucket": "amatrol",
+
+    "processor": "realtime",
+    "_comment_processor": "historic",
+    "t_start": "2024-01-22 15:00:00",
+    "t_end": "2024-01-22 17:00:00"
+}

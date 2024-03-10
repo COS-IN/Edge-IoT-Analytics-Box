@@ -1,0 +1,24 @@
+{
+    "_comment": [
+      "All times are in seconds",
+      "DataAnalyzer options: arima, avg, tserve_avg, tserve_arima",
+      "Processor options: realtime, historic",
+      "t_start, t_end only apply if processor is historic"
+    ],
+    "version": 10, 
+    "output_field_name": "dummy",
+    "dataanalyzer": "dump",
+    "window_size": 121,
+    "time_step": 1,
+    "input_measurements": [
+        "Power_Meters/CNC_Machines/VF5_v2/TruePowerWatts/Value",
+        "Power_Meters/CNC_Machines/VF5_v2/TruePowerWatts/Value"
+    ],
+    "models": [
+      "arima",
+      "arnn_truepower"
+    ],
+    "influxdb_bucket": "amatrol",
+    "processor": "realtime"
+}
+

@@ -4,7 +4,7 @@
 
 <h1  align="center" >Extensible Data Analytics System</h1>
 <h2 align="center">Abdul Rehman</h2>
-<h2 align="center">Advisor: Prateek Sharma</h2>
+<h3 align="center">Advisor: Prateek Sharma</h2>
 <h3 align="center">Indiana University, Bloomington</h3>
 
 # Table of Contents

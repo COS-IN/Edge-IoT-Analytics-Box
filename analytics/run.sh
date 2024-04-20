@@ -17,6 +17,10 @@ kill_children () {
 }
 trap kill_children SIGINT SIGTERM EXIT
 
+export DATAANALYZER_PROFILE=1
+export DATAANALYZER_TSERVE_IP="$jetson_ip"
+export DATAANALYZER_TSERVE_PORT=8080
+
 for config in ./configs/*.json; do 
     python3 ./run_config_v10.py --config  $config &
 done

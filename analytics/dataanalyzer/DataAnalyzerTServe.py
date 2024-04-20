@@ -5,7 +5,10 @@ import base64
 import binascii
 import os
 import time
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> .
 
 from dataanalyzer.DataAnalyzer import DataAnalyzer
 
@@ -83,7 +86,10 @@ class DataAnalyzerTServe(DataAnalyzer):
             e = time.time()
             if self.dprofile == "1":
                 print( f"{int(e)},{e-s}" )
+<<<<<<< HEAD
                 sys.stdout.flush()
+=======
+>>>>>>> .
             try: 
                 rdf = self.bytes_to_df( r.content )
             except binascii.Error:

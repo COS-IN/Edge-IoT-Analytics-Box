@@ -65,12 +65,19 @@ class PlotBase:
         self.init_setrcParams()
         self.init_genaxis()
 
-    def plot_draw(self, data ):
+    def plot_draw(self, data, xlabels ):
         ax = self.axs
 
         #for col in df.columns:
         #    ax.hist(df[col], label=col)
-        ax.violinplot(data, vert=True)
+        ax.violinplot(data,  vert=True)
+        # xlabels,
+        # replace xticks 
+        ax.set_xticks( np.arange(1, len(xlabels)+1) )
+        ax.set_xticklabels( xlabels )
+
+        ax.set_ylabel("Time (seconds)")
+        ax.set_xlabel("Number of Parallel Requests")
 
         ax.legend()
 
@@ -107,19 +114,21 @@ import fire
 import pandas as pd 
 
 def main( oname, *csvs ):
-    print(csvs)
     data = []
+    xlabels = []
     for csv in csvs:
         df = pd.read_csv(csv)
         df = df.set_index('timestamp')
         df = df.to_numpy().flatten()
         df = df[~np.isnan(df)]
         data.append(df)
-        print("{}-{}".format(csv, df.shape))
-
+        csv = csv.split('/')[-1]
+        csv = csv.split('.')[0]
+        csv = csv.split('_')[1]
+        xlabels.append(str(csv))
     pb = PlotBase(1, 1, 5, 5, oname )
     pb.plot_init()
-    pb.plot_draw( data )
+    pb.plot_draw( data, xlabels )
     pb.plot_close()
 
 if __name__ == "__main__":

@@ -17,21 +17,21 @@ for expgroup in $script_path/../series_results/*; do
     for singleexp in $expgroup/*; do
         if [ -d $singleexp ]; then
             echo "Combining $singleexp"
-            python3 \
-                $script_path/combine_single.py \
-                $singleexp  \
-                $singleexp/config*.log
+            #python3 \
+            #    $script_path/combine_single.py \
+            #    $singleexp  \
+            #    $singleexp/config*.log
 
-            python3 \
-                $script_path/plot_single_csv.py \
-                $singleexp.csv &> /dev/null 
+            #python3 \
+            #    $script_path/plot_single_csv.py \
+            #    $singleexp.csv &> /dev/null 
             csvs+=($singleexp.csv)
         fi
     done
     python3 \
         $script_path/plot_multi_csv.py \
         $expgroup/cplot \
-        ${csvs[@]} &> /dev/null
+        ${csvs[@]} #&> /dev/null
 done
 
 

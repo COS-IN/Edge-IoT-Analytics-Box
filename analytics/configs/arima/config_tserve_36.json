@@ -1,0 +1,21 @@
+{
+    "_comment": [
+      "All times are in seconds",
+      "DataAnalyzer options: arima, avg, tserve_avg, tserve_arima",
+      "Processor options: realtime, historic",
+      "t_start, t_end only apply if processor is historic"
+    ],
+    "version": 10, 
+    "output_field_name": "dummy",
+    "dataanalyzer": "tserve",
+    "window_size": 60,
+    "time_step": 1,
+    "input_measurements": [
+        "Power_Meters/HVAC/RoofTopUnit1_old/PhC-TruePowerW/Value"
+    ],
+    "models": [
+        "arima"
+    ],
+    "influxdb_bucket": "amatrol",
+    "processor": "realtime"
+}

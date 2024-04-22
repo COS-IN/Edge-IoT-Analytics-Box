@@ -11,13 +11,11 @@
     "window_size": 60,
     "time_step": 1,
     "input_measurements": [
-        "Power_Meters/HVAC/RoofTopUnit1_v2/ApparentPowerVA/Value"
+        "Power_Meters/CNC_Machines/ST10_v2/PhC-TruePowerW/Value"
     ],
     "models": [
-        "arnn_powerfactor",
         "arima"
     ],
     "influxdb_bucket": "amatrol",
     "processor": "realtime"
 }
-

@@ -14,6 +14,7 @@ cd $script_path
 # Combine for each single experiment  
 for expgroup in $script_path/../series_results/*; do
     csvs=()
+    pcsvs=()
     for singleexp in $expgroup/*; do
         if [ -d $singleexp ]; then
             echo "Combining $singleexp"
@@ -25,13 +26,22 @@ for expgroup in $script_path/../series_results/*; do
             #python3 \
             #    $script_path/plot_single_csv.py \
             #    $singleexp.csv &> /dev/null 
+            #
+            #python3 \
+            #    $script_path/process_tegralogs.py \
+            #    $singleexp/tegrastats.log 
             csvs+=($singleexp.csv)
+            pcsvs+=($singleexp/tegrastats.log.power.csv)
         fi
     done
     python3 \
         $script_path/plot_multi_csv.py \
         $expgroup/cplot \
-        ${csvs[@]} #&> /dev/null
+        ${csvs[@]} &> /dev/null
+    python3 \
+        $script_path/plot_multi_csv_power.py \
+        $expgroup/pplot \
+        ${pcsvs[@]} #&> /dev/null
 done
 
 

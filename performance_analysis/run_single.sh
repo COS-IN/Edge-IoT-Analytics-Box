@@ -57,5 +57,6 @@ for pid in ${sys_pids[@]}; do
     kill $pid
     wait $pid
 done
+./ssh_remote.sh "sudo pkill -i tegrastats" 
 wait $(jobs -p)
 

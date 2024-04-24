@@ -23,16 +23,16 @@
         * config_name, inferences with index of timestamps
     * [x] plot csv for single exp 
     
-  * post process collective results  
-    * plot results  
-      * voilin plot for inference times 
+  * [x] post process collective results  
+    * [x] plot results  
+      * [x] voilin plot for inference times 
     
-  * update report 
+  * [x] update report 
   
   * Updates 
     * single experiment 
       * measuring energy cost 
-        * [x] capturing tegrastats output 
+        * capturing tegrastats output 
         * post processing logs 
           * to get total power for each timestamp
         * post processing inference logs to get 
@@ -40,6 +40,7 @@
         * calculate energy cost for each inference
 
 ## Worklog (Doing) 
+
   r ! date
 
 

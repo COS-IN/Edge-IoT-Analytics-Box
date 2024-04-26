@@ -16,7 +16,8 @@ docker run  \
          --rm  \
          -it  \
          --runtime nvidia \
-         -p 127.0.0.1:8080:8080  \
+         --expose 8080  \
+         -p 0.0.0.0:8080:8080  \
          -p 127.0.0.1:8081:8081  \
          -p 127.0.0.1:8082:8082  \
          -v $store_path:/home/model-server/model-store aarehman/torchserve:latest-cpu

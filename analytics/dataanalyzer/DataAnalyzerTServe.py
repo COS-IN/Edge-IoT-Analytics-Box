@@ -3,6 +3,9 @@ import requests
 import pickle 
 import base64
 import binascii
+import os
+import time
+import sys
 
 from dataanalyzer.DataAnalyzer import DataAnalyzer
 
@@ -13,14 +16,20 @@ class DataAnalyzerTServe(DataAnalyzer):
     """
 
     def __init__(self, server_ip="localhost", port="8080", timeout=120, model_name='arnn_truepower'):
-        self.server_ip = server_ip
-        self.port = port
+
         self.timeout = timeout
         self.model_name = model_name
         self.hist_dict = {}
         self.hist_limit = 10*60 # seconds 
-    
-    def gather_hist(self, measur, cur_win ):
+        def set_env( env_var, default ):
+            if env_var in os.environ:
+                return os.environ[env_var]
+            return default
+        self.dprofile = set_env( "DATAANALYZER_PROFILE", "0" )
+        self.server_ip = set_env( "DATAANALYZER_TSERVE_IP", server_ip )
+        self.port = set_env( "DATAANALYZER_TSERVE_PORT", port )
+
+    def gather_hist( self, measur, cur_win ):
         hist_dict = self.hist_dict
         if measur not in hist_dict:
             hist_dict[measur] = cur_win
@@ -68,13 +77,35 @@ class DataAnalyzerTServe(DataAnalyzer):
             df = self.gather_hist( measur, cur_win )
             df = pd.DataFrame(df)
             data = self.df_to_bytes( df )
+
+            s = time.time()
             r = self.request( self.model_name, data )
+            e = time.time()
+            if self.dprofile == "1":
+                print( f"{int(e)},{e-s}" )
+                sys.stdout.flush()
             try: 
                 rdf = self.bytes_to_df( r.content )
             except binascii.Error:
                 print(self.model_name, r, r.content )
-                exit(-1)
-            return rdf 
+                exit( -1 )
+            return rdf
 
+import unittest
+
+class MyClassTestCases(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_connection(self):
+        da = DataAnalyzerTServe("156.56.159.50", "8080", 120, 'arnn_truepower');
+
+
+if __name__ == "__main__":
+    unittest.main()
 
 

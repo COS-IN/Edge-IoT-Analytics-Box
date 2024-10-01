@@ -75,7 +75,7 @@ class InfluxDB:
         if start: 
           start = convert_to_iso( start )
         
-        win_size = '60s'
+        win_size = '1s'
 
         if end and delta:
             start = apply_delta( end, delta )

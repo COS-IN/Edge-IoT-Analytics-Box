@@ -22,12 +22,8 @@
 
 ## Overview 
 
-Edge-IoT-Analytics-Box is a data analytics system that can be used to capture and analyze data in real time. 
-The system is designed to be deployed on edge devices like Jetson Orin with following design goals.
-
-  * extensibility 
-  * ease of research 
-  * minimum overhead from development to production 
+Edge-IoT-Analytics-Box is a data analytics system that captures and analyzes data in real time. 
+The system is designed to be deployed on edge devices like Jetson Orin.
 
 ## Architecture 
 
@@ -53,14 +49,13 @@ For 54 sensors being predicted using arima model and RNN model
 
 ## Repository Layout    
 
-For details of each module, please refer to the README.md in the respective directory.
+Each module has it's own directory.
 
-* tserve 
-  * Contains code to deploy torch serve on Jetson Orin along with scripts for building and delploying models. 
-* analytics 
-  * Framework to setup the pipeline for data analytics using models deployed on torch serve. 
-* streaming_service  
-  * Contains code to setup data streaming from sensors to InfluxDB, including scripts to setup InfluxDB.
+**./tserve (Torch Serve):** Contains code to deploy torch serve on Jetson Orin along with scripts for building and delploying models. 
+
+**./analytics (Framework):** Framework to setup a data analytics pipeline using models deployed on torch serve. 
+
+**./streaming_service (Data Fetching):** Contains code to setup data streaming from sensors to InfluxDB, including scripts to setup InfluxDB.
 
 ## Getting Started 
 

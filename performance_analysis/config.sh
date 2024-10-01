@@ -4,13 +4,20 @@
 # Locations 
 target="ar@$jetson_ip"
 dst_dir="/data2/ar/workspace/Edge-IoT-Analytics-Box"
+<<<<<<< HEAD
 results_dir="results"
+=======
+>>>>>>> .
 
 ###
 # Parameters  
 
+<<<<<<< HEAD
 warmup_time=10 # seconds
 duration=30 # seconds
+=======
+warmuptime=60 # seconds
+>>>>>>> .
 
 ###
 # Functions 
@@ -22,6 +29,7 @@ EOF
     cat <<< "# $1"
 }
 
+<<<<<<< HEAD
 rotatedir(){
   if [ -d $1 ]; then
     mv $1 $1-$(date +%Y%m%d%H%M%S)
@@ -29,6 +37,8 @@ rotatedir(){
   mkdir -p $1
 }
 
+=======
+>>>>>>> .
 # include config from directory above if it exists
 get_real_path() {
     script_path=$(dirname $1)

@@ -35,6 +35,10 @@ export DATAANALYZER_PROFILE=0
 export DATAANALYZER_TSERVE_IP="$jetson_ip"
 export DATAANALYZER_TSERVE_PORT=8080
 
+export DATAANALYZER_PROFILE=1
+export DATAANALYZER_TSERVE_IP="$jetson_ip"
+export DATAANALYZER_TSERVE_PORT=8080
+
 for config in ./configs/*.json; do 
     if [ $capture_inference ]; then
         export DATAANALYZER_PROFILE=1

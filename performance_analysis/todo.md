@@ -7,6 +7,7 @@
 
 ## Next Actions (Planning)
 
+<<<<<<< HEAD
   * [x] setup for single experiment  
     * [x] measuring inference time 
       * [x] update analytics to spit out inference time
@@ -41,6 +42,24 @@
 
 ## Worklog (Doing) 
 
+=======
+  * setup for single experiment  
+    * [x] measuring inference time 
+      * [x] update analytics to spit out inference time
+    * measuring energy cost 
+      * capturing tegrastats output 
+    * setting up jetson for the experiment 
+    * measuring metrices 
+    * cleaning up afterwards 
+  * post process the experiment 
+  * repeat the experiments for following set  
+  * post process collective results  
+  * update report 
+
+
+
+## Worklog (Doing) 
+>>>>>>> .
   r ! date
 
 

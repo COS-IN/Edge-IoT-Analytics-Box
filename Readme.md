@@ -46,6 +46,8 @@ For 54 sensors being predicted using arima model and RNN model
   * GPU utilization ~40 %
   * InfluxDB storage increases by ~7 Kbytes per second
     * it would take 866 days to fill up 500 Gb of space which is ~2.3 years
+    
+Please see [report](https://github.com/abrehman94/Edge-IoT-Analytics-Box/blob/main/docs/performance_analysis/report.pdf) for more details.
 
 ## Repository Layout    
 
